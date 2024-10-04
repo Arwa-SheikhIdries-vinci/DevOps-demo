@@ -24,6 +24,7 @@ router.post('/enableAccount', (req, res, next) => {
     }
 });
 
+
 router.post('/disableAccount', (req, res, next) => {
     if (req.session.admin) {
         User.disableAccount(req.body.id);
