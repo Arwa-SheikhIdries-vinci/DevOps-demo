@@ -22,14 +22,7 @@ router.post('/login', (req, res, next) => {
     // User in DB ? -> return the record of the user if found
     const userFound = User.find(req.body.userLogin);
     console.log("User found" + JSON.stringify(userFound));
-    if (userFound) {
-        userFoundActive(userFound, req, res);
-    }
-    else {
-        console.log("bad user");
-        req.session.errors = "Utilisateur inconnu";
-        res.redirect('/users');
-    }
+    userFound(userFound, req, res);
 });
 
 router.get('/logout', (req, res, next) => {
@@ -74,6 +67,17 @@ router.post('/add', (req, res, next) => {
 });
 
 module.exports = router;
+
+function userFound(userFound, req, res) {
+    if (userFound) {
+        userFoundActive(userFound, req, res);
+    }
+    else {
+        console.log("bad user");
+        req.session.errors = "Utilisateur inconnu";
+        res.redirect('/users');
+    }
+}
 
 function userFoundActive(userFound, req, res) {
     if (userFound.active == false) {
