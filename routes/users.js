@@ -23,29 +23,7 @@ router.post('/login', (req, res, next) => {
     const userFound = User.find(req.body.userLogin);
     console.log("User found" + JSON.stringify(userFound));
     if (userFound) {
-        if (userFound.active == false) {
-            req.session.errors = "Compte désactivé";
-            res.redirect('/users');
-        }
-        else {
-            if (bcrypt.compareSync(req.body.userPassword, userFound.password)) {
-                console.log("password correct");
-                req.session.login = req.body.userLogin;
-                req.session.connected = true;
-                if (userFound.admin) {
-                    req.session.admin = true;
-                    res.redirect('/admin');
-                } else {
-                    req.session.admin = false;
-                    res.redirect('/members');
-                }
-            }
-            else {
-                console.log("bad password");
-                req.session.errors = "Mot de passe incorrect";
-                res.redirect('/users');
-            }
-        }
+        userFoundActive(userFound, req, res);
     }
     else {
         console.log("bad user");
@@ -96,3 +74,37 @@ router.post('/add', (req, res, next) => {
 });
 
 module.exports = router;
+
+function userFoundActive(userFound, req, res) {
+    if (userFound.active == false) {
+        req.session.errors = "Compte désactivé";
+        res.redirect('/users');
+    }
+    else {
+        if (bcrypt.compareSync(req.body.userPassword, userFound.password)) {
+            passwordCorrect(req, userFound, res);
+        }
+        else {
+            badPassword(req, res);
+        }
+    }
+}
+
+function passwordCorrect(req, userFound, res) {
+    console.log("password correct");
+    req.session.login = req.body.userLogin;
+    req.session.connected = true;
+    if (userFound.admin) {
+        req.session.admin = true;
+        res.redirect('/admin');
+    } else {
+        req.session.admin = false;
+        res.redirect('/members');
+    }
+}
+
+function badPassword(req, res) {
+    console.log("bad password");
+    req.session.errors = "Mot de passe incorrect";
+    res.redirect('/users');
+}
