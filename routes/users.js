@@ -10,9 +10,7 @@ const validator = require('validator');
 /* form login / password */
 router.get('/', (req, res, next) => {
     console.log("USERS INDEX");
-    if (req.session.login) {
-        res.redirect("/members");
-    }
+    login(req, res);
     res.render('users/index');
 });
 
@@ -67,6 +65,12 @@ router.post('/add', (req, res, next) => {
 });
 
 module.exports = router;
+
+function login(req, res) {
+    if (req.session.login) {
+        res.redirect("/members");
+    }
+}
 
 function userFound(userFound, req, res) {
     if (userFound) {
